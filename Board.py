@@ -8,7 +8,7 @@ class Board:
     # are no cells with the same color are already touching to match the filler game.
     def __init__(self, size = (7,8)):
         self.size = size
-        self.data = np.random.randint(0, high=5, size=self.size)
+        self.data = np.random.randint(0, high=6, size=self.size)
         self.fix_board()
         
         self.player_1_color = self.data[self.size[0]-1,0]
@@ -157,11 +157,9 @@ class Board:
                 num_colored_neighbors[self.data[neighbor]] += 1            
             
             # Return the top color but checking to make sure we're not chossing the other player's color  
-            top_colors = np.argsort(num_colored_neighbors)
-            if top_colors[-1] == self.player_2_color:
-                return top_colors[-2]
-            else:
-                return top_colors[-1]      
+            num_colored_neighbors[self.player_2_color] = -1
+            num_colored_neighbors[self.player_1_color] = -1
+            return np.argmax(num_colored_neighbors)
         
         elif player_number == 2:         
             # Finding all neighbors and adding them to the running total of num_colored_neighbors
@@ -174,11 +172,9 @@ class Board:
                 num_colored_neighbors[self.data[neighbor]] += 1       
             
             # Return the top color but checking to make sure we're not chossing the other player's color  
-            top_colors = np.argsort(num_colored_neighbors)
-            if top_colors[-1] == self.player_1_color:
-                return top_colors[-2]
-            else:
-                return top_colors[-1]        
+            num_colored_neighbors[self.player_2_color] = -1
+            num_colored_neighbors[self.player_1_color] = -1
+            return np.argmax(num_colored_neighbors)      
         
         else:
                raise Exception("Invalid player number")
