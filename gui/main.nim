@@ -2,7 +2,7 @@ import jester, karax/[karaxdsl, vdom], nimpy, strformat, strutils
 let sys = pyImport("sys")
 discard sys.path.append("..") # get module from above
 let board = pyImport("Board")
-var game = board.Board(size=(10, 10))
+var game = board.Board()
 proc renderRow(row: PyObject): auto =
     buildHTML(tdiv(class="flex")):
         for color in row:
