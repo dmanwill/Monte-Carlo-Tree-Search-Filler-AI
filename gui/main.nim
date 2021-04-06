@@ -1,4 +1,4 @@
-import jester, karax/[karaxdsl, vdom], nimpy, strformat, strutils
+import jester, karax/[karaxdsl, vdom], nimpy, strformat, strutils, sequtils
 let sys = pyImport("sys")
 discard sys.path.append("..") # get module from above
 let board = pyImport("Board")
@@ -26,13 +26,19 @@ proc renderScore(data: PyObject): VNode =
         span: text $data.get_score()[1]
 proc over(data: PyObject): bool =
     data.get_score()[0].to(int) + data.get_score()[1].to(int) == data.size[0].to(int) * data.size[1].to(int)
+proc renderSettings(): VNode =
+    buildHTML(tdiv):
+        form(`method`="get", action="/reset"):
+            input(type="number", value="8", placeholder="width", name="width")
+            input(type="number", value="7", placeholder="height", name="height")
+            input(type="submit", value="Reset Game")
 proc render(): string =
     let vnode = buildHTML(tdiv):
         game.data.renderBoard
         if not game.over():
             game.legal_moves().renderMoves
         game.renderScore()
-        a(href = &"/reset"): text "Reset Game"
+        renderSettings()
     return $vnode
 var baseHTML = readFile("index.html")
 routes:
@@ -45,5 +51,7 @@ routes:
         discard game.update_board(2, greedy)
         redirect "/"
     get "/reset":
-        game = board.Board()
+        var width = @"width".parseInt
+        var height = @"height".parseInt
+        game = board.Board(size=(height, width))
         redirect "/"
