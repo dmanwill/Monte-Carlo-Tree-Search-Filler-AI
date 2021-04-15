@@ -23,8 +23,8 @@ class Board:
         self.player_1_color = self.data[self.size[0]-1,0]
         self.player_2_color = self.data[0,self.size[1]-1]
         
-        self.player_1_cells_captured = [(self.size[0]-1,0)]
-        self.player_2_cells_captured = [(0,self.size[1]-1)]
+        self.player_1_cells_captured = {(self.size[0]-1,0)}
+        self.player_2_cells_captured = {(0,self.size[1]-1)}
 
     
     # Displays the board
@@ -125,15 +125,15 @@ class Board:
                 neighbors.update([(cell[0]+1,cell[1]), (cell[0]-1,cell[1]), 
                                   (cell[0],cell[1]+1), (cell[0],cell[1]-1)])
                 self.data[cell] = color_value
-            neighbors -= set(self.player_1_cells_captured)
-            neighbors -= set(self.player_2_cells_captured)
+            neighbors -= self.player_1_cells_captured
+            neighbors -= self.player_2_cells_captured
 
             # Finding valid neighbors adding to captured set if they have the same 
             # color as the chosen color
             neighbors = self.valid_neighbors(list(neighbors))  
             for neighbor in neighbors:
                 if self.data[neighbor] == color_value:
-                    self.player_1_cells_captured.append(neighbor)
+                    self.player_1_cells_captured.add(neighbor)
             
             # Updating player color
             self.player_1_color = color_value
@@ -150,15 +150,15 @@ class Board:
                 neighbors.update([(cell[0]+1,cell[1]), (cell[0]-1,cell[1]), 
                                   (cell[0],cell[1]+1), (cell[0],cell[1]-1)])
                 self.data[cell] = color_value
-            neighbors -= set(self.player_2_cells_captured)
-            neighbors -= set(self.player_1_cells_captured)
+            neighbors -= self.player_2_cells_captured
+            neighbors -= self.player_1_cells_captured
 
             # Finding valid neighbors adding to captured set if they have the same 
             # color as the chosen color
-            neighbors = self.valid_neighbors(list(neighbors))  
+            neighbors = self.valid_neighbors(neighbors)
             for neighbor in neighbors:
                 if self.data[neighbor] == color_value:
-                    self.player_2_cells_captured.append(neighbor)
+                    self.player_2_cells_captured.add(neighbor)
             
             # Updating player color
             self.player_2_color = color_value
@@ -253,11 +253,11 @@ class Board:
         
         # Storing correct player information
         if player_number == 1:
-            player_territory = set(self.player_1_cells_captured)
-            opponent_territory = set(self.player_2_cells_captured)
+            player_territory = self.player_1_cells_captured
+            opponent_territory = self.player_2_cells_captured
         elif player_number == 2:
-            player_territory = set(self.player_2_cells_captured)
-            opponent_territory = set(self.player_1_cells_captured)
+            player_territory = self.player_2_cells_captured
+            opponent_territory = self.player_1_cells_captured
         else:
             raise Exception("Invalid player number")
 
@@ -274,7 +274,7 @@ class Board:
             neighbors -= opponent_territory
             neighbors -= player_territory            
 
-            neighbors = self.valid_neighbors(list(neighbors))   
+            neighbors = self.valid_neighbors(neighbors)   
             for neighbor in neighbors:
                 if self.data[neighbor] == move:
                     territory_neighbors.add(neighbor)
