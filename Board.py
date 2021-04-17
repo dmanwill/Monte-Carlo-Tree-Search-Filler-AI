@@ -185,7 +185,9 @@ class Board:
             # Return the top color but checking to make sure we're not chossing the other player's color  
             num_colored_neighbors[self.player_2_color] = -1
             num_colored_neighbors[self.player_1_color] = -1
-            return np.argmax(num_colored_neighbors)
+            
+            # Returning a random choice of the best greedy moves
+            return np.random.choice(np.where(num_colored_neighbors == num_colored_neighbors.max())[0])
         
         elif player_number == 2:         
             # Finding all neighbors and adding them to the running total of num_colored_neighbors
@@ -198,7 +200,9 @@ class Board:
             # Return the top color but checking to make sure we're not chossing the other player's color  
             num_colored_neighbors[self.player_2_color] = -1
             num_colored_neighbors[self.player_1_color] = -1
-            return np.argmax(num_colored_neighbors)      
+
+            # Returning a random choice of the best greedy moves
+            return np.random.choice(np.where(num_colored_neighbors == num_colored_neighbors.max())[0])    
         
         else:
                raise Exception("Invalid player number")
@@ -248,8 +252,9 @@ class Board:
         if depth < 2:
             return self.greedy_move(player_number)
         
-        best_move = -1 # the best move we're trying to find
-        best_territory = 0 # amount of territory the best sequence of moves can get
+        # Keeping track of the maximum ammount of territory possible to gain
+        # for a given move at a given depth
+        best_territory_by_move = np.zeros(6)
         
         # Storing correct player information
         if player_number == 1:
@@ -281,15 +286,10 @@ class Board:
             
             # Calling the helper function to find the best possible territory to capture after 
             # the given depth of moves
-            best_subsequent_territory = self.best_move_depth_helper(player_territory.union(
+            best_territory_by_move[move] = self.best_move_depth_helper(player_territory.union(
                 territory_neighbors), opponent_territory, depth, 2)
-            
-            # Checking if this was the best move
-            if best_subsequent_territory > best_territory:
-                best_territory = best_subsequent_territory
-                best_move = move
 
-            #print(f"The most possible territory with move {move} is {best_subsequent_territory}")
-
-        # Returning the best move
-        return best_move
+        #print(f"The most possible territory with move {move} is {np.argmax(best_territory_by_move)}")
+        
+        # Returning a random choice of the best moves at the given depth
+        return np.random.choice(np.where(best_territory_by_move == best_territory_by_move.max())[0])

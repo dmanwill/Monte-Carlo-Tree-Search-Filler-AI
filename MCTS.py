@@ -128,14 +128,14 @@ class MCTS:
         score = board.get_score()
         if self.player == 1:
             if score[0] > score[1]:
-                return (1, score[0]*2 / board_size) 
+                return (1, score[0] / board_size) 
             else:
-                return (0, 0)
+                return (0, score[0] / board_size)
         else:
             if score[1] > score[0]:
-                return (1, score[1]*2 / board_size)
+                return (1, score[1] / board_size)
             else:
-                return (0, 0)
+                return (0, score[1] / board_size)
     
     
     # Backpropagation step of the MCTS algorithm.    
@@ -164,7 +164,7 @@ class MCTS:
         for inx, child in enumerate(self.root_node.children):
             move_scores[inx] = (child.num_wins + child.score_value) / child.num_visits
             if verbose:
-                size_scale = self.game_board.size[0] * self.game_board.size[1] / 2
+                size_scale = self.game_board.size[0] * self.game_board.size[1]
                 print(f"{get_color_name(child.color)} has win percentage {child.num_wins / child.num_visits}" + 
                 f" with an average score of {child.score_value / child.num_visits * size_scale}")
 
