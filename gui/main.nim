@@ -39,8 +39,13 @@ proc renderSettings(): VNode =
       select(id = "ai", name = "ai"):
         option(value = "greedy"):
           text "Greedy"
-        option(value = "mcts"):
-          text "Monte Carlo Tree Search"
+        if ai == "mcts":
+          option(value = "mcts", selected = ""):
+            text "Monte Carlo Tree Search"
+        else:
+          option(value = "mcts"):
+            text "Monte Carlo Tree Search"
+
       br()
       input(type="submit", value="Reset Game")
 proc render(): string =
@@ -65,7 +70,7 @@ routes:
     elif ai == "mcts":
       var time = now()
       var mcts = mcts.MCTS(game, 2, exploration_parameter = 5, intelligence_parameter = 0.5)
-      aiMove = mcts.select_move(100).to(int)
+      aiMove = mcts.select_move(200).to(int)
     discard game.update_board(2, aiMove)
     redirect "/"
   get "/reset":
