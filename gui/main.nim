@@ -2,6 +2,7 @@ import jester, karax/[karaxdsl, vdom], nimpy, strformat, strutils, sequtils, tim
 let sys = pyImport("sys")
 discard sys.path.append("..") # get module from above
 let board = pyImport("Board")
+let pickle = pyImport("pickle")
 let mcts = pyImport("MCTS")
 var game = board.Board()
 var ai = "greedy"
@@ -26,6 +27,12 @@ proc renderScore(data: PyObject): VNode =
     br()
     bold: text "AI score: "
     span: text $data.get_score()[1]
+proc renderRestore(): VNode =
+  buildHTML(tdiv):
+    form(`method` = "post", action="/restore", enctype="multipart/form-data"):
+      input(type="file", name="save")
+      input(type="submit", value="Restore Save")
+    a(href="/download"): text "Download Save"
 proc over(data: PyObject): bool =
   data.get_score()[0].to(int) + data.get_score()[1].to(int) == data.size[0].to(int) * data.size[1].to(int)
 proc renderSettings(): VNode =
@@ -56,6 +63,7 @@ proc render(): string =
       game.legal_moves().renderMoves
     game.renderScore()
     renderSettings()
+    renderRestore()
   return $vnode
 var baseHTML = readFile("index.html")
 routes:
@@ -78,4 +86,11 @@ routes:
     var height = @"height".parseInt
     ai = @"ai"
     game = board.Board(size=(height, width))
+    redirect "/"
+  get "/download":
+    attachment "game.save"
+    resp pickle.dumps(game).to(string)
+  post "/restore":
+    var save = request.formData.getOrDefault("save").body
+    game = pickle.loads(save)
     redirect "/"
