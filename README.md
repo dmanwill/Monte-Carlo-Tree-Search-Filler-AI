@@ -9,4 +9,4 @@ Note that you will also need the Python dependencies installed. Make sure you ha
 ```
 pip install numpy matplotlib
 ``` 
-in order to install the dependencies. If you want to run the Jupyter Notebook as well, you will need to install [Jupter](https://jupyter.org/).
+in order to install the dependencies. If you want to run the Jupyter Notebook as well, you will need to install [Jupyter](https://jupyter.org/).
