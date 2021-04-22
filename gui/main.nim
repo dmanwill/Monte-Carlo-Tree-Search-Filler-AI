@@ -77,7 +77,7 @@ routes:
       aiMove = game.greedy_move(2).to(int)
     elif ai == "mcts":
       var time = now()
-      var mcts = mcts.MCTS(game, 2, exploration_parameter = 5, intelligence_parameter = 0.5)
+      var mcts = mcts.MCTS(game, 2, exploration_parameter = 1, intelligence_parameter = 0.5)
       aiMove = mcts.select_move(200).to(int)
     discard game.update_board(2, aiMove)
     redirect "/"
